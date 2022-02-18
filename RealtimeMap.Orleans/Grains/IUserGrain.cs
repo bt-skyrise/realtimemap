@@ -8,7 +8,7 @@ public interface IUserGrain : IGrainWithGuidKey
 {
     Task Initialize();
     Task UpdateViewport(Viewport viewport);
-    Task Poison();
+    Task Deinitialize();
 }
 
 public class UserGrain : RealtimeMapGrain, IUserGrain
@@ -41,19 +41,6 @@ public class UserGrain : RealtimeMapGrain, IUserGrain
         }
     }
     
-    public Task UpdateViewport(Viewport viewport)
-    {
-        _viewport = viewport;
-
-        return Task.CompletedTask;
-    }
-    
-    public Task Poison()
-    {
-        DeactivateOnIdle();
-        return Task.CompletedTask;
-    }
-
     private async Task OnPosition(VehiclePosition position, StreamSequenceToken token)
     {
         Console.WriteLine($"User {Id}: received {position}");
@@ -62,5 +49,21 @@ public class UserGrain : RealtimeMapGrain, IUserGrain
         {
             await _userPositionsStream!.OnNextAsync(position);
         }
+    }
+    
+    public Task UpdateViewport(Viewport viewport)
+    {
+        _viewport = viewport;
+
+        return Task.CompletedTask;
+    }
+    
+    public Task Deinitialize()
+    {
+        _viewport = null;
+        
+        DeactivateOnIdle();
+        
+        return Task.CompletedTask;
     }
 }

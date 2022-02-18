@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using Orleans;
+using Orleans.Streams;
+using RealtimeMap.Orleans.Grains;
 using RealtimeMap.Orleans.Positions;
+using RealtimeMap.Orleans.Streams;
 
 namespace RealtimeMap.Orleans.Hubs;
 
@@ -8,70 +11,61 @@ public class EventsHub : Hub
 {
     private readonly IHubContext<EventsHub> _eventsHubContext;
     private readonly ILogger<EventsHub> _logger;
+    private readonly IClusterClient _clusterClient;
 
-    public EventsHub(IHubContext<EventsHub> eventsHubContext, ILogger<EventsHub> logger)
+    public EventsHub(IHubContext<EventsHub> eventsHubContext, ILogger<EventsHub> logger, IClusterClient clusterClient)
     {
         _logger = logger;
+        _clusterClient = clusterClient;
 
         // since the Hub is scoped per request, we need the IHubContext to be able to
         // push messages from the User actor
         _eventsHubContext = eventsHubContext;
     }
 
-    // private PID UserActorPid
-    // {
-    //     get => Context.Items["user-pid"] as PID;
-    //     set => Context.Items["user-pid"] = value;
-    // }
-
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
-        // initialize user grain
-        // subscribe to user's stream (with generated guid?)
-        
         _logger.LogInformation("Client {ClientId} connected", Context.ConnectionId);
+
+        UserId = Guid.NewGuid();
         
         var connectionId = Context.ConnectionId;
-        
-        // UserActorPid = _cluster.System.Root.Spawn(
-        //     Props.FromProducer(() => new UserActor(
-        //             batch => SendPositionBatch(connectionId, batch),
-        //             notification => SendNotification(connectionId, notification)
-        //         ))
-        //         .WithTracing()
-        // );
 
-        return Task.CompletedTask;
+        var userGrain = GetUserGrain();
+
+        await userGrain.Initialize();
+        
+        VehiclePositionsSubscription = await _clusterClient
+            .GetUserPositionsStream(UserId)
+            .SubscribeAsync(async (position, _) =>
+            {
+                await SendPositionBatch(connectionId, new[] { position });
+            });
     }
-
-    public Task SetViewport(double swLng, double swLat, double neLng, double neLat)
+    
+    public async Task SetViewport(double swLng, double swLat, double neLng, double neLat)
     {
-        // update user grain's viewport
-        
         _logger.LogInformation("Client {ClientId} setting viewport to ({SWLat}, {SWLng}),({NELat}, {NELng})",
             Context.ConnectionId, swLat, swLng, neLat, neLng);
+        
+        var userGrain = _clusterClient.GetGrain<IUserGrain>(UserId);
 
-        // _senderContext.Send(UserActorPid, new UpdateViewport
-        // {
-        //     Viewport = new Viewport
-        //     {
-        //         SouthWest = new GeoPoint(swLng, swLat),
-        //         NorthEast = new GeoPoint(neLng, neLat)
-        //     }
-        // });
-
-        return Task.CompletedTask;
+        await userGrain.UpdateViewport(new Viewport(
+            SouthWest: new GeoPoint(swLng, swLat),
+            NorthEast: new GeoPoint(neLng, neLat)
+        ));
     }
 
-    private async Task SendPositionBatch(string connectionId, GeoPoint[] batch)
+    private async Task SendPositionBatch(string connectionId, VehiclePosition[] batch)
     {
-        // await _eventsHubContext.Clients.Client(connectionId).SendAsync("positions",
-        //     new PositionsDto
-        //     {
-        //         Positions = batch.Positions
-        //             .Select(PositionDto.MapFrom)
-        //             .ToArray()
-        //     });
+        await _eventsHubContext.Clients.Client(connectionId).SendAsync("positions",
+            new PositionsDto
+            {
+                Positions = batch
+                    .Select(PositionDto.MapFrom)
+                    .ToArray()
+            }
+        );
     }
 
     // private async Task SendNotification(string connectionId)
@@ -89,13 +83,34 @@ public class EventsHub : Hub
     //     }
     // }
 
-    public override async Task OnDisconnectedAsync(Exception exception)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        // unsubscribe viewport, kill grain
-        
-        // _logger.LogDebug("Client {ClientId} disconnected", Context.ConnectionId);
-        // RealtimeMapMetrics.SignalRConnections.ChangeBy(-1);
-        //
-        // await _cluster.System.Root.StopAsync(UserActorPid);
+        var userGrain = GetUserGrain();
+
+        await userGrain.Deinitialize();
+
+        if (VehiclePositionsSubscription is not null)
+        {
+            await VehiclePositionsSubscription.UnsubscribeAsync();
+        }
     }
+    
+    private IUserGrain GetUserGrain()
+    {
+        return _clusterClient.GetGrain<IUserGrain>(UserId);
+    }
+    
+    private Guid UserId
+    {
+        get => (Guid?)Context.Items[nameof(UserId)] ?? throw new InvalidOperationException("User ID not set.");
+        set => Context.Items[nameof(UserId)] = value;
+    }
+
+    private StreamSubscriptionHandle<VehiclePosition>? VehiclePositionsSubscription
+    {
+        get => (StreamSubscriptionHandle<VehiclePosition>?)Context.Items[nameof(VehiclePositionsSubscription)];
+        set => Context.Items[nameof(VehiclePositionsSubscription)] = value;
+    }
+    
+    
 }

@@ -47,16 +47,19 @@ public class IngressHostedService : IHostedService
     {
         var vehicleId = $"{hrtPositionUpdate.OperatorId}.{hrtPositionUpdate.VehicleNumber}";
 
-        var geoPoint = new GeoPoint(
-            hrtPositionUpdate.VehiclePosition.Long.GetValueOrDefault(0),
-            hrtPositionUpdate.VehiclePosition.Lat.GetValueOrDefault(0)
+        var position = new GeoPoint(
+            hrtPositionUpdate.VehiclePosition.Long.GetValueOrDefault(),
+            hrtPositionUpdate.VehiclePosition.Lat.GetValueOrDefault()
         );
         
         var vehiclePosition = new VehiclePosition(
             OrgId: hrtPositionUpdate.OperatorId,
-            Position: geoPoint,
+            Position: position,
             VehicleId: vehicleId,
-            Timestamp: hrtPositionUpdate.VehiclePosition.Tst.GetValueOrDefault().DateTime
+            Timestamp: hrtPositionUpdate.VehiclePosition.Tst.GetValueOrDefault().DateTime,
+            Heading: (int)hrtPositionUpdate.VehiclePosition.Hdg.GetValueOrDefault(),
+            DoorsOpen: hrtPositionUpdate.VehiclePosition.Drst == 1,
+            Speed: hrtPositionUpdate.VehiclePosition.Spd.GetValueOrDefault()
         );
 
         var vehicleGrain = _client.GetGrain<IVehicleGrain>(vehicleId);
