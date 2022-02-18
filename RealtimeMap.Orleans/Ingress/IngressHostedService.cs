@@ -1,22 +1,27 @@
+using Orleans;
 using RealtimeMap.Ingress;
+using RealtimeMap.Orleans.Grains;
 using RealtimeMap.Orleans.Positions;
 using Serilog;
 using ILogger = Serilog.ILogger;
 
-namespace RealtimeMap.Orleans;
+namespace RealtimeMap.Orleans.Ingress;
 
 public class IngressHostedService : IHostedService
 {
-    private static ILogger Logger = Log.ForContext<IngressHostedService>();
+    private static readonly ILogger Logger = Log.ForContext<IngressHostedService>();
     
     private readonly IConfiguration _configuration;
     private readonly ILoggerFactory _loggerFactory;
-    private HrtPositionsSubscription _hrtPositionsSubscription;
+    private readonly IClusterClient _client;
+    
+    private HrtPositionsSubscription? _hrtPositionsSubscription;
 
-    public IngressHostedService(IConfiguration configuration, ILoggerFactory loggerFactory)
+    public IngressHostedService(IConfiguration configuration, ILoggerFactory loggerFactory, IClusterClient client)
     {
         _configuration = configuration;
         _loggerFactory = loggerFactory;
+        _client = client;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -53,7 +58,11 @@ public class IngressHostedService : IHostedService
             VehicleId: vehicleId,
             Timestamp: hrtPositionUpdate.VehiclePosition.Tst.GetValueOrDefault().DateTime
         );
+
+        var vehicleGrain = _client.GetGrain<IVehicleGrain>(vehicleId);
         
+        await vehicleGrain.OnPosition(vehiclePosition);
+
         Logger.Information("Received position: {Position}.", vehiclePosition);
     }
 

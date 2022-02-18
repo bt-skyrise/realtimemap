@@ -1,4 +1,4 @@
-﻿namespace RealtimeMap.Orleans;
+﻿namespace RealtimeMap.Orleans.Ingress;
 
 public static class IngressConfiguration
 {

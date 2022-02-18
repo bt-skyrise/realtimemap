@@ -1,4 +1,5 @@
 using RealtimeMap.Orleans;
+using RealtimeMap.Orleans.Ingress;
 
 var builder = WebApplication.CreateBuilder(args);
 
