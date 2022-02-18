@@ -18,6 +18,8 @@ public class CircularGeofence
         
         _geoCoordinate = new GeoCoordinate(centralPoint.Latitude, centralPoint.Longitude);
     }
+    
+    public bool IncludesLocation(GeoPoint position) => IncludesLocation(position.Latitude, position.Longitude);
 
     public bool IncludesLocation(double latitude, double longitude)
     {

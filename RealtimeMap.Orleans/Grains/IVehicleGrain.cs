@@ -6,7 +6,7 @@ namespace RealtimeMap.Orleans.Grains;
 
 public interface IVehicleGrain : IGrainWithStringKey
 {
-    Task OnPosition(VehiclePosition position);
+    Task OnPosition(VehiclePosition vehiclePosition);
 }
 
 public class VehicleGrain : RealtimeMapGrain, IVehicleGrain
@@ -24,14 +24,16 @@ public class VehicleGrain : RealtimeMapGrain, IVehicleGrain
         return Task.CompletedTask;
     }
 
-    public Task OnPosition(VehiclePosition position)
+    public async Task OnPosition(VehiclePosition vehiclePosition)
     {
-        Console.WriteLine($"Vehicle {Id}: received {position}");
+        Console.WriteLine($"Vehicle {Id}: received {vehiclePosition}");
         
-        _currentPosition = position;
+        _currentPosition = vehiclePosition;
 
-        _positionsStream!.OnNextAsync(position);
+        await _positionsStream!.OnNextAsync(vehiclePosition);
 
-        return Task.CompletedTask;
+        await GrainFactory
+            .GetGrain<IOrganizationGrain>(vehiclePosition.OrgId)
+            .OnPosition(vehiclePosition);
     }
 }

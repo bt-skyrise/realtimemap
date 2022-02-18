@@ -1,10 +1,12 @@
 ﻿using Orleans;
 using RealtimeMap.Orleans.Models;
+using RealtimeMap.Orleans.Positions;
 
 namespace RealtimeMap.Orleans.Grains;
 
 public interface IGeofenceGrain : IGrainWithStringKey
 {
+    Task OnPosition(VehiclePosition vehiclePosition);
     Task<GeofenceDetails> GetDetails();
 }
 
@@ -23,7 +25,8 @@ public record GeofenceDetails(
     string Name,
     string OrgId,
     double RadiusInMeters,
-    GeoPoint Position
+    GeoPoint Position,
+    string[] VehiclesInZone
 );
 
 public static class GeofenceGrainExtensions

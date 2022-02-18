@@ -18,7 +18,7 @@ public class GeofenceDto
             RadiusInMeters = geofence.RadiusInMeters,
             Longitude = geofence.Position.Longitude,
             Latitude = geofence.Position.Latitude,
-            VehiclesInZone = Array.Empty<string>()
+            VehiclesInZone = geofence.VehiclesInZone
         };
     }
 }
