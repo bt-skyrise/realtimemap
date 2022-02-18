@@ -1,6 +1,7 @@
 using Orleans;
 using RealtimeMap.Ingress;
 using RealtimeMap.Orleans.Grains;
+using RealtimeMap.Orleans.Models;
 using RealtimeMap.Orleans.Positions;
 using Serilog;
 using ILogger = Serilog.ILogger;

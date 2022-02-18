@@ -1,4 +1,5 @@
 using RealtimeMap.Orleans;
+using RealtimeMap.Orleans.Api;
 using RealtimeMap.Orleans.Hubs;
 using RealtimeMap.Orleans.Ingress;
 
@@ -24,6 +25,7 @@ app.UseRouting();
 
 app.MapHub<EventsHub>("/events");
 
-app.MapGet("/", () => "Hello World!");
+app.MapOrganizationApi();
+app.MapTrailApi();
 
 app.Run();

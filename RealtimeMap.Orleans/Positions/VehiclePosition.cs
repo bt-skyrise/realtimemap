@@ -1,4 +1,6 @@
-﻿namespace RealtimeMap.Orleans.Positions;
+﻿using RealtimeMap.Orleans.Models;
+
+namespace RealtimeMap.Orleans.Positions;
 
 public record VehiclePosition(
     string OrgId,

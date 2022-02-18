@@ -2,6 +2,7 @@
 using Orleans;
 using Orleans.Streams;
 using RealtimeMap.Orleans.Grains;
+using RealtimeMap.Orleans.Models;
 using RealtimeMap.Orleans.Positions;
 using RealtimeMap.Orleans.Streams;
 

@@ -1,4 +1,6 @@
-﻿namespace RealtimeMap.Orleans.Positions;
+﻿using RealtimeMap.Orleans.Positions;
+
+namespace RealtimeMap.Orleans.Models;
 
 public record GeoPoint(double Longitude, double Latitude)
 {
