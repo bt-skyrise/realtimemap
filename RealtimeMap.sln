@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealtimeMap.Orleans", "RealtimeMap.Orleans\RealtimeMap.Orleans.csproj", "{EDFEC311-1209-4C8A-96AF-569AF7E487B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealtimeMap.Ingress", "RealtimeMap.Ingress\RealtimeMap.Ingress.csproj", "{AE5438CF-4EE8-4F58-9F17-A5BD9B989082}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,5 +24,9 @@ Global
 		{EDFEC311-1209-4C8A-96AF-569AF7E487B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDFEC311-1209-4C8A-96AF-569AF7E487B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDFEC311-1209-4C8A-96AF-569AF7E487B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5438CF-4EE8-4F58-9F17-A5BD9B989082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5438CF-4EE8-4F58-9F17-A5BD9B989082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5438CF-4EE8-4F58-9F17-A5BD9B989082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5438CF-4EE8-4F58-9F17-A5BD9B989082}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
