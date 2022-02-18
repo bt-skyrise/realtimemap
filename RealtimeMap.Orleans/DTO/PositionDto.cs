@@ -1,3 +1,5 @@
+using RealtimeMap.Orleans.Positions;
+
 namespace RealtimeMap.Orleans.DTO;
 
 public class PositionDto
@@ -8,22 +10,21 @@ public class PositionDto
     public long Timestamp { get; set; }
     public int Heading { get; set; }
     public float? Speed { get; set; }
-
     public bool DoorsOpen { get; set; }
 
-    // public static PositionDto MapFrom(Position position)
-    // {
-    //     return new()
-    //     {
-    //         Latitude = position.Latitude,
-    //         Longitude = position.Longitude,
-    //         Timestamp = position.Timestamp,
-    //         Heading = position.Heading,
-    //         VehicleId = position.VehicleId,
-    //         Speed = 10,
-    //         DoorsOpen = position.DoorsOpen
-    //     };
-    // }
+    public static PositionDto MapFrom(VehiclePosition vehiclePosition)
+    {
+        return new()
+        {
+            Latitude = vehiclePosition.Position.Latitude,
+            Longitude = vehiclePosition.Position.Longitude,
+            Timestamp = ((DateTimeOffset)vehiclePosition.Timestamp).ToUnixTimeSeconds(),
+            Heading = vehiclePosition.Heading,
+            VehicleId = vehiclePosition.VehicleId,
+            Speed = 10,
+            DoorsOpen = vehiclePosition.DoorsOpen
+        };
+    }
 }
 
 public class PositionsDto
