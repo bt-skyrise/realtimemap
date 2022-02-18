@@ -4,7 +4,7 @@ namespace RealtimeMap.Orleans;
 
 public static class LoggingConfiguration
 {
-    public static void ConfigureLogging(this WebApplicationBuilder builder)
+    public static void UseRealtimeMapLogging(this WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog((context, cfg)
             => cfg

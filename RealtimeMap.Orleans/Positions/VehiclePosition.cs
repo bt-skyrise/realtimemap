@@ -7,5 +7,5 @@ public record VehiclePosition(
     DateTime Timestamp
 )
 {
-    public bool IsWithinViewport(Viewport viewport) => Position.IsInViewport(viewport);
+    public bool IsWithinViewport(Viewport viewport) => Position.IsWithinViewport(viewport);
 }

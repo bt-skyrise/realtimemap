@@ -2,9 +2,9 @@ using RealtimeMap.Orleans;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureLogging();
-
-builder.Services.AddHostedService<IngressHostedService>();
+builder.UseRealtimeMapOrleans();
+builder.UseRealtimeMapLogging();
+builder.UseRealtimeMapIngres();
 
 var app = builder.Build();
 

@@ -2,7 +2,7 @@
 
 public record GeoPoint(double Longitude, double Latitude)
 {
-    public bool IsInViewport(Viewport viewport)
+    public bool IsWithinViewport(Viewport viewport)
     {
         // naive implementation, ignores edge cases
         return Longitude >= viewport.SouthWest.Longitude &&
