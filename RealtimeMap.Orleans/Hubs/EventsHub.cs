@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Orleans;
 using Orleans.Streams;
+using RealtimeMap.Orleans.DTO;
 using RealtimeMap.Orleans.Grains;
 using RealtimeMap.Orleans.Models;
 using RealtimeMap.Orleans.Positions;
@@ -42,6 +43,13 @@ public class EventsHub : Hub
             {
                 await SendPositionBatch(connectionId, new[] { position });
             });
+
+        NotificationsSubscription = await _clusterClient
+            .GetNotificationsStream()
+            .SubscribeAsync(async (notification, _) =>
+            {
+                await SendNotification(connectionId, notification);
+            });
     }
     
     public async Task SetViewport(double swLng, double swLat, double neLng, double neLat)
@@ -69,20 +77,12 @@ public class EventsHub : Hub
         );
     }
 
-    // private async Task SendNotification(string connectionId)
-    // {
-    //     try
-    //     {
-    //         await _eventsHubContext.Clients.Client(connectionId)
-    //             .SendAsync("notification", NotificationDto.MapFrom(notification));
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         activity?.RecordException(e);
-    //         activity?.SetStatus(Status.Error);
-    //         throw;
-    //     }
-    // }
+    private async Task SendNotification(string connectionId, Notification notification)
+    {
+        await _eventsHubContext.Clients
+            .Client(connectionId)
+            .SendAsync("notification", NotificationDto.MapFrom(notification));
+    }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
@@ -93,6 +93,11 @@ public class EventsHub : Hub
         if (VehiclePositionsSubscription is not null)
         {
             await VehiclePositionsSubscription.UnsubscribeAsync();
+        }
+
+        if (NotificationsSubscription is not null)
+        {
+            await NotificationsSubscription.UnsubscribeAsync();
         }
     }
     
@@ -113,5 +118,9 @@ public class EventsHub : Hub
         set => Context.Items[nameof(VehiclePositionsSubscription)] = value;
     }
     
-    
+    private StreamSubscriptionHandle<Notification>? NotificationsSubscription
+    {
+        get => (StreamSubscriptionHandle<Notification>?)Context.Items[nameof(NotificationsSubscription)];
+        set => Context.Items[nameof(NotificationsSubscription)] = value;
+    }
 }

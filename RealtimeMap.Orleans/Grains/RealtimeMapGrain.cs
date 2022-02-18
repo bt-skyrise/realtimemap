@@ -1,5 +1,6 @@
 ﻿using Orleans;
 using Orleans.Streams;
+using RealtimeMap.Orleans.Models;
 using RealtimeMap.Orleans.Positions;
 using RealtimeMap.Orleans.Streams;
 
@@ -17,5 +18,11 @@ public abstract class RealtimeMapGrain : Grain
     {
         return GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
             .GetUserPositionsStream(userId);
+    }
+    
+    protected IAsyncStream<Notification> GetNotificationsStream()
+    {
+        return GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
+            .GetNotificationsStream();
     }
 }

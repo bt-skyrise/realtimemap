@@ -7,16 +7,21 @@ namespace RealtimeMap.Orleans.Grains;
 
 public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
 {
-    private IAsyncStream<VehiclePosition>? _positionsStream;
+    private IAsyncStream<Notification>? _notificationsStream;
+    private Organization? _organization;
     private CircularGeofence? _geofence;
     private readonly HashSet<string> _vehiclesInGeofence = new();
-    
+
     private GeofenceIdentity Id => GeofenceIdentity.FromString(this.GetPrimaryKeyString());
     
     public override async Task OnActivateAsync()
     {
-        _geofence = Organizations
-            .ById[Id.OrganizationId]
+        _notificationsStream = GetNotificationsStream();
+
+        _organization = Organizations
+            .ById[Id.OrganizationId];
+        
+        _geofence = _organization
             .Geofences
             .SingleOrDefault(geofence => geofence.Name == Id.GeofenceName);
     }
@@ -38,8 +43,7 @@ public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
             if (!vehicleAlreadyInZone)
             {
                 _vehiclesInGeofence.Add(vehiclePosition.VehicleId);
-                
-                // todo: send notification
+                await SendNotification(vehiclePosition, GeofenceEvent.Enter);
             }
         }
         else
@@ -47,10 +51,20 @@ public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
             if (vehicleAlreadyInZone)
             {
                 _vehiclesInGeofence.Remove(vehiclePosition.VehicleId);
-                
-                // todo: send notification
+                await SendNotification(vehiclePosition, GeofenceEvent.Exit);
             }
         }
+    }
+
+    private async Task SendNotification(VehiclePosition vehiclePosition, GeofenceEvent geofenceEvent)
+    {
+        await _notificationsStream!.OnNextAsync(new Notification(
+            VehicleId: vehiclePosition.VehicleId,
+            OrganizationId: _organization!.Id,
+            OrganizationName: _organization!.Name,
+            GeofenceName: _geofence!.Name,
+            GeofenceEvent: geofenceEvent
+        ));
     }
 
     public Task<GeofenceDetails> GetDetails()
