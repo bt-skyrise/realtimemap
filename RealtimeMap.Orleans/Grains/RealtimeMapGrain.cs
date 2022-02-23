@@ -10,19 +10,19 @@ public abstract class RealtimeMapGrain : Grain
 {
     protected IAsyncStream<VehiclePosition> GetPositionsStream()
     {
-        return GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
+        return this.GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
             .GetPositionsStream();
     }
     
     protected IAsyncStream<VehiclePosition> GetUserPositionsStream(Guid userId)
     {
-        return GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
+        return this.GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
             .GetUserPositionsStream(userId);
     }
     
     protected IAsyncStream<Notification> GetNotificationsStream()
     {
-        return GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
+        return this.GetStreamProvider(RealtimeMapSmsStreamProvider.Name)
             .GetNotificationsStream();
     }
 }

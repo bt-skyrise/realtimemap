@@ -13,7 +13,7 @@ public class UserGrain : RealtimeMapGrain, IUserGrain
 
     private Guid Id => this.GetPrimaryKey();
 
-    public override async Task OnActivateAsync()
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _positionsStream = GetPositionsStream();
         _userPositionsStream = GetUserPositionsStream(Id);

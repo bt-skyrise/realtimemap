@@ -11,7 +11,7 @@ public class OrganizationGrain : RealtimeMapGrain, IOrganizationGrain
     
     private string Id => this.GetPrimaryKeyString();
 
-    public override Task OnActivateAsync()
+    public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _organization = Organizations.ById[Id];
 

@@ -13,8 +13,8 @@ public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
     private readonly HashSet<string> _vehiclesInGeofence = new();
 
     private GeofenceIdentity Id => GeofenceIdentity.FromString(this.GetPrimaryKeyString());
-    
-    public override async Task OnActivateAsync()
+
+    public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _notificationsStream = GetNotificationsStream();
 
@@ -24,6 +24,8 @@ public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
         _geofence = _organization
             .Geofences
             .SingleOrDefault(geofence => geofence.Name == Id.GeofenceName);
+
+        return Task.CompletedTask;
     }
 
     public async Task OnPosition(VehiclePosition vehiclePosition)

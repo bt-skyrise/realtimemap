@@ -13,7 +13,7 @@ public class VehicleGrain : RealtimeMapGrain, IVehicleGrain
 
     private string Id => this.GetPrimaryKeyString();
 
-    public override Task OnActivateAsync()
+    public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _positionsStream = GetPositionsStream();
         
