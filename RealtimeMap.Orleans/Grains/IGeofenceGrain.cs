@@ -21,13 +21,41 @@ public record GeofenceIdentity(string OrganizationId, string GeofenceName)
     public override string ToString() => $"{OrganizationId}/{GeofenceName}";
 }
 
-public record GeofenceDetails(
-    string Name,
-    string OrgId,
-    double RadiusInMeters,
-    GeoPoint Position,
-    string[] VehiclesInZone
-);
+[GenerateSerializer]
+public record GeofenceDetails
+{
+    public GeofenceDetails()
+    {
+    }
+    
+    public GeofenceDetails(string Name,
+        string OrgId,
+        double RadiusInMeters,
+        GeoPoint Position,
+        string[] VehiclesInZone)
+    {
+        this.Name = Name;
+        this.OrgId = OrgId;
+        this.RadiusInMeters = RadiusInMeters;
+        this.Position = Position;
+        this.VehiclesInZone = VehiclesInZone;
+    }
+
+    [Id(0)]
+    public string Name { get; init; }
+    
+    [Id(1)]
+    public string OrgId { get; init; }
+    
+    [Id(2)]
+    public double RadiusInMeters { get; init; }
+    
+    [Id(3)]
+    public GeoPoint Position { get; init; }
+    
+    [Id(4)]
+    public string[] VehiclesInZone { get; init; }
+}
 
 public static class GeofenceGrainExtensions
 {
