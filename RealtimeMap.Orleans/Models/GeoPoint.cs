@@ -1,9 +1,27 @@
-﻿using RealtimeMap.Orleans.Positions;
+﻿using Orleans;
+using RealtimeMap.Orleans.Positions;
 
 namespace RealtimeMap.Orleans.Models;
 
-public record GeoPoint(double Longitude, double Latitude)
+[GenerateSerializer]
+public class GeoPoint
 {
+    [Id(0)]
+    public double Longitude { get; init; }
+    
+    [Id(1)]
+    public double Latitude { get; init; }
+
+    public GeoPoint()
+    {
+    }
+
+    public GeoPoint(double longitude, double latitude)
+    {
+        Longitude = longitude;
+        Latitude = latitude;
+    }
+    
     public bool IsWithinViewport(Viewport viewport)
     {
         // naive implementation, ignores edge cases

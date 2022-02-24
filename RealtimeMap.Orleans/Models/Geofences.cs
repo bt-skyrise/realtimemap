@@ -1,6 +1,4 @@
-﻿using RealtimeMap.Orleans.Positions;
-
-namespace RealtimeMap.Orleans.Models;
+﻿namespace RealtimeMap.Orleans.Models;
 
 public static class Geofences
 {

@@ -1,5 +1,24 @@
-﻿using RealtimeMap.Orleans.Models;
+﻿using Orleans;
+using RealtimeMap.Orleans.Models;
 
 namespace RealtimeMap.Orleans.Positions;
 
-public record Viewport(GeoPoint SouthWest, GeoPoint NorthEast);
+[GenerateSerializer]
+public record Viewport
+{
+    public Viewport()
+    {
+    }
+    
+    public Viewport(GeoPoint SouthWest, GeoPoint NorthEast)
+    {
+        this.SouthWest = SouthWest;
+        this.NorthEast = NorthEast;
+    }
+
+    [Id(0)]
+    public GeoPoint? SouthWest { get; init; }
+    
+    [Id(1)]
+    public GeoPoint? NorthEast { get; init; }
+}

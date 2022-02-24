@@ -48,20 +48,22 @@ public class IngressHostedService : IHostedService
     {
         var vehicleId = $"{hrtPositionUpdate.OperatorId}.{hrtPositionUpdate.VehicleNumber}";
 
-        var position = new GeoPoint(
-            hrtPositionUpdate.VehiclePosition.Long.GetValueOrDefault(),
-            hrtPositionUpdate.VehiclePosition.Lat.GetValueOrDefault()
-        );
-        
-        var vehiclePosition = new VehiclePosition(
-            OrgId: hrtPositionUpdate.OperatorId,
-            Position: position,
-            VehicleId: vehicleId,
-            Timestamp: hrtPositionUpdate.VehiclePosition.Tst.GetValueOrDefault().DateTime,
-            Heading: (int)hrtPositionUpdate.VehiclePosition.Hdg.GetValueOrDefault(),
-            DoorsOpen: hrtPositionUpdate.VehiclePosition.Drst == 1,
-            Speed: hrtPositionUpdate.VehiclePosition.Spd.GetValueOrDefault()
-        );
+        var position = new GeoPoint()
+        {
+            Longitude = hrtPositionUpdate.VehiclePosition.Long.GetValueOrDefault(),
+            Latitude = hrtPositionUpdate.VehiclePosition.Lat.GetValueOrDefault()
+        };
+
+        var vehiclePosition = new VehiclePosition()
+        {
+            OrgId = hrtPositionUpdate.OperatorId,
+            Position = position,
+            VehicleId = vehicleId,
+            Timestamp = hrtPositionUpdate.VehiclePosition.Tst.GetValueOrDefault().DateTime,
+            Heading = (int)hrtPositionUpdate.VehiclePosition.Hdg.GetValueOrDefault(),
+            DoorsOpen = hrtPositionUpdate.VehiclePosition.Drst == 1,
+            Speed = hrtPositionUpdate.VehiclePosition.Spd.GetValueOrDefault()
+        };
 
         var vehicleGrain = _client.GetGrain<IVehicleGrain>(vehicleId);
         
