@@ -9,6 +9,18 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "RealtimeMap.Orleans Secondary": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5005",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SiloPort": "11112",
+        "GatewayPort": "30001",
+        "DashboardPort": "8002"
+      }
     }
   }
 }

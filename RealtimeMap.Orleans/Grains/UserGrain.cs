@@ -31,8 +31,7 @@ public class UserGrain : RealtimeMapGrain, IUserGrain
     
     private async Task OnPosition(VehiclePosition position, StreamSequenceToken token)
     {
-        Console.WriteLine($"User {Id}: received {position}");
-        
+       
         if (_viewport is not null && position.IsWithinViewport(_viewport))
         {
             await _userPositionsStream!.OnNextAsync(position);

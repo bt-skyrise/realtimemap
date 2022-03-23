@@ -33,9 +33,7 @@ public class GeofenceGrain : RealtimeMapGrain, IGeofenceGrain
             return;
         }
         
-        // todo: use logging
-        Console.WriteLine($"Geofence {Id}: received {vehiclePosition}");
-        
+       
         var vehicleAlreadyInZone = _vehiclesInGeofence.Contains(vehiclePosition.VehicleId);
         
         if (_geofence.IncludesLocation(vehiclePosition.Position))

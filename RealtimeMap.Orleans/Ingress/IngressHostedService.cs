@@ -66,8 +66,6 @@ public class IngressHostedService : IHostedService
         var vehicleGrain = _client.GetGrain<IVehicleGrain>(vehicleId);
         
         await vehicleGrain.OnPosition(vehiclePosition);
-
-        Logger.Information("Received position: {Position}.", vehiclePosition);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

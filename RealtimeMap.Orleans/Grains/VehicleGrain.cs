@@ -22,8 +22,6 @@ public class VehicleGrain : RealtimeMapGrain, IVehicleGrain
 
     public async Task OnPosition(VehiclePosition vehiclePosition)
     {
-        Console.WriteLine($"Vehicle {Id}: received {vehiclePosition}");
-
         _vehiclePositionHistory.Add(vehiclePosition);
         
         await _positionsStream!.OnNextAsync(vehiclePosition);
