@@ -25,11 +25,6 @@ public static class OrleansConfiguration
             
             
             // MOGODB CLUSTERING
-            .Configure<ClusterOptions>(opt =>
-            {
-                opt.ClusterId = "dev";
-                opt.ServiceId = "RealtimeMap";
-            })
             .ConfigureEndpoints(siloPort: builder.Configuration.GetValue("SiloPort", 11111), gatewayPort: builder.Configuration.GetValue("GatewayPort", 30000))
             .UseMongoDBClient("mongodb://mongoadmin:secret@localhost:27017/test?authSource=admin&directConnection=true&ssl=false")
             .UseMongoDBClustering(opt =>
